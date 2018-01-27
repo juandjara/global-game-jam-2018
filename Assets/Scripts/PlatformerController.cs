@@ -35,7 +35,7 @@ public class PlatformerController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
+	void Update () {
 		bool _isGrounded = isGrounded();
 		bool _wallAtLeft = wallAtLeft();
 		bool _wallAtRight = wallAtRight();
@@ -44,10 +44,10 @@ public class PlatformerController : MonoBehaviour {
 				body.velocity = Vector3.up * jumpSpeed;
 			}
 			if(_wallAtRight) {
-				body.velocity += Vector3.left * moveSpeed / 2;
+				body.velocity += Vector3.left * moveSpeed * 0.5f;
 			}
 			if(_wallAtLeft) {
-				body.velocity += Vector3.right * moveSpeed / 2;
+				body.velocity += Vector3.right * moveSpeed * 0.5f;
 			}
 		}
 		float axis = Input.GetAxis("Horizontal");
