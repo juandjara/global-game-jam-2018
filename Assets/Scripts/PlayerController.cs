@@ -73,12 +73,10 @@ public class PlayerController : MonoBehaviour {
         infected.Remove(newPlayer);
         Animator anim = GetComponent<Animator>();
         anim.SetTrigger("dead");
-        WaitForAnimation();
+        Invoke("DeleteThisPlayer", 3.1f);
     }
 
-    IEnumerator WaitForAnimation () {
-        Animation animation;
-        animation.PlayQueued("Take 001 1");
-        yield return animation.WhilePlaying();
+    void DeleteThisPlayer () {
+        Destroy(this);
     }
 }
