@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour {
     void Start () {
         myTrans = this.transform;
         ChangeMAT();
+        LoadData();
     }
 
     // Update is called once per frame
