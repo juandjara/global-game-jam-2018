@@ -15,6 +15,7 @@ public class GameSceneManager : MonoBehaviour {
         ToChoose();
         CreatePlayer();
         CreateEnemies();
+        FindObjectOfType<PlayerController>().LoadData();
 
     }
 	
@@ -73,6 +74,7 @@ public class GameSceneManager : MonoBehaviour {
                 Instantiate(tiposVirus[state], o.transform);
                 o.GetComponent<SampleNavScript>().Infect();
                 o.layer = 10;
+                FindObjectOfType<PlayerController>().AddInfected(o);
             }
         }
 
