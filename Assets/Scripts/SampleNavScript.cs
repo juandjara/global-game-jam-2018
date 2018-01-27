@@ -5,26 +5,27 @@ using UnityEngine.AI;
 
 public class SampleNavScript : MonoBehaviour {
 
-    public Transform target;
+    public GameObject target;
+    GameObject t;
     NavMeshAgent agent;
 
-    public GameObject[] stateVirus;
-
     // Use this for initialization
+    void Awake () { CreateTarget(); }
     void Start () {
         agent = GetComponent<NavMeshAgent>();
+        
     }
 
     // Update is called once per frame
     void Update () {
-        agent.SetDestination(target.position);
+        agent.SetDestination(t.transform.position);
 
 
     }
 
     private void OnCollisionEnter (Collision collision) {
-        if (collision.gameObject == target.gameObject) {
-            target.position = NewTargetPosition();
+        if (collision.gameObject == t) {
+            t.transform.position = NewTargetPosition();
         }
     }
 
@@ -33,6 +34,12 @@ public class SampleNavScript : MonoBehaviour {
         float z = Random.Range(-4.4f, 3.69f);
 
         return (new Vector3(x, 0.5f, z));
+    }
+
+    void CreateTarget () {
+        t = Instantiate(target);
+        t.transform.position = NewTargetPosition();
+        target = t;
     }
 
 }

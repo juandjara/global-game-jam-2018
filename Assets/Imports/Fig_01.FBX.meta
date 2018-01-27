@@ -1,14 +1,14 @@
 fileFormatVersion: 2
-guid: 9f5e11b665105bf448ca05ed3ec96129
+guid: bcad16568e14b1d41a61821204dc940b
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: Pyramid001
-    100002: Pyramid002
-    100004: //RootNode
-    400000: Pyramid001
-    400002: Pyramid002
-    400004: //RootNode
+    100000: //RootNode
+    100002: Pyramid001
+    100004: Pyramid002
+    400000: //RootNode
+    400002: Pyramid001
+    400004: Pyramid002
     2100000: No Name
     2300000: Pyramid001
     2300002: Pyramid002
