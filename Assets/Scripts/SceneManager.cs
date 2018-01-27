@@ -39,11 +39,15 @@ public class SceneManager : MonoBehaviour {
             e.transform.position = NewTargetPosition();
             Instantiate(tiposVirus[EnemyMesh()], e.transform);
         }
+        GameObject o = Instantiate(enemy);
+        o.transform.position = NewTargetPosition();
+        Instantiate(tiposVirus[state], o.transform);
+        o.layer = 9;
     }
 
     Vector3 NewTargetPosition () {
-        float x = Random.Range(-8.14f, 8.07f);
-        float z = Random.Range(-4.4f, 3.69f);
+        float x = Random.Range(-16.44f, 16.08f);
+        float z = Random.Range(-9.07f, 8.74f);
 
         return (new Vector3(x, 0.5f, z));
     }
@@ -51,7 +55,7 @@ public class SceneManager : MonoBehaviour {
     int EnemyMesh () {
         int i = state;
         while (i == state) {
-            i = Random.Range(0, (tiposVirus.Length-1));
+            i = Random.Range(0, (tiposVirus.Length));
         }
         return i;
     }

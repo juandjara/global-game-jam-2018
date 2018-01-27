@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
@@ -6,6 +8,9 @@ public class PlayerController : MonoBehaviour {
     public float angularSpeed = 100;
 
     Transform myTrans;
+
+
+    List<GameObject> infected = new List<GameObject>();
 
     public Material[] MATs;
     // Use this for initialization
@@ -33,10 +38,20 @@ public class PlayerController : MonoBehaviour {
         if (col.gameObject.layer == 8) {
             Dead();
         }
+        if (col.gameObject.layer == 9) {
+            infected.Add(col.gameObject);
+            col.gameObject.GetComponent<SampleNavScript>().Infect();
+
+
+        }
     }
 
     private void Dead () {
-        // TODO GameOver scene
+        if (infected.Count == 0) {
+            // TODO GameOver scene
+        } else {
+            ChangeBode();
+        }
     }
 
     void ChangeMAT () {
@@ -46,5 +61,24 @@ public class PlayerController : MonoBehaviour {
         foreach (var item in matr) {
             item.material = MATs[m];
         }
+    }
+
+    void ChangeBode () {
+        GameObject newPlayer = infected[Random.Range(0, infected.Count)];
+        Destroy(newPlayer.GetComponent<SampleNavScript>());
+        newPlayer.AddComponent<PlayerController>();
+        newPlayer.layer = 0;
+        newPlayer.name = "Player(Clone)";
+        newPlayer.transform.GetChild(0).GetComponent<Animator>().SetTrigger("alive");
+        infected.Remove(newPlayer);
+        Animator anim = GetComponent<Animator>();
+        anim.SetTrigger("dead");
+        WaitForAnimation();
+    }
+
+    IEnumerator WaitForAnimation () {
+        Animation animation;
+        animation.PlayQueued("Take 001 1");
+        yield return animation.WhilePlaying();
     }
 }
