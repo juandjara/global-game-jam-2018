@@ -1,8 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour {
+
 
     public float speed = 3;
     public float angularSpeed = 100;
@@ -14,11 +16,16 @@ public class PlayerController : MonoBehaviour {
 
     public Material[] MATs;
 
-    public GameSceneManager gameScene;
+    GameSceneManager gameScene;
     // Use this for initialization
     void Start () {
+        gameScene = FindObjectOfType<GameSceneManager>();
         myTrans = this.transform;
+        gameScene.pause += PauseControl;
         ChangeMAT();
+    }
+    void PauseControl () {
+        handleControl = true;
     }
 
     // Update is called once per frame
@@ -45,15 +52,28 @@ public class PlayerController : MonoBehaviour {
         if (col.gameObject.layer == 9) {
             SaveData();
             infected.Add(col.gameObject);
-            col.gameObject.GetComponent<SampleNavScript>().Infect();
+
+            //
+            // centrar camara
+            FindObjectOfType<CameraController>().target = col.transform;
+            Invoke("ChangeScene", 0.3f);
+            /// Cambiar de lugar
+            
 
 
         }
     }
 
+    void ChangeScene () {
+        
+        
+        SceneManager.LoadScene(2);
+        //col.gameObject.GetComponent<SampleNavScript>().Infect();
+    }
+
     void Dead () {
         if (infected.Count == 0) {
-            // TODO GameOver scene
+            GameOver();
             PlayerPrefs.SetInt("Lista de infectados", 0);
         } else {
             ChangeBode();
@@ -63,7 +83,7 @@ public class PlayerController : MonoBehaviour {
     void ChangeMAT () {
         if (MATs[0] != null) {
             int m = Random.Range(0, MATs.Length);
-
+            PlayerPrefs.SetInt("color", m);
             Renderer[] matr = GetComponentsInChildren<Renderer>();
             foreach (var item in matr) {
                 item.material = MATs[m];
@@ -99,10 +119,16 @@ public class PlayerController : MonoBehaviour {
     public void LoadData () {
         int i = PlayerPrefs.GetInt("Lista de infectados");
         int winPlataform = PlayerPrefs.GetInt("winPlataform");
-        gameScene.InstantiateInfected(i, winPlataform);
+       // gameScene.InstantiateInfected(i, winPlataform);
     }
 
     public void AddInfected (GameObject newInfected) {
         infected.Add(newInfected);
+    }
+
+    void GameOver () {
+        gameScene.CallPause();
+
+
     }
 }

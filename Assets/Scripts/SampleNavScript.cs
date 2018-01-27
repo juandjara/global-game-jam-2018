@@ -10,18 +10,27 @@ public class SampleNavScript : MonoBehaviour {
     NavMeshAgent agent;
     public Material[] MATs;
     Animator anim;
+    
 
     public Texture texture;
     bool infectedStatus = false;
 
+    GameSceneManager gameScene;
     // Use this for initialization
     void Awake () { CreateTarget(); }
     void Start () {
+        gameScene = FindObjectOfType<GameSceneManager>();
         agent = GetComponent<NavMeshAgent>();
+        gameScene.pause += PauseControl;
         ChangeMAT();
         SetAnim();
     }
-    
+    void PauseControl () {
+        Debug.Log("pausecall");
+        agent.isStopped = true;
+        infectedStatus = true;
+    }
+
     // Update is called once per frame
     void Update () {
         

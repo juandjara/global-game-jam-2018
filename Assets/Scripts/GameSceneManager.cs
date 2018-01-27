@@ -10,8 +10,12 @@ public class GameSceneManager : MonoBehaviour {
 
     int state;
 
-	// Use this for initialization
-	void Start () {
+
+    //public delegate void Pause ();
+    public System.Action pause;
+
+    // Use this for initialization
+    void Start () {
         ToChoose();
         CreatePlayer();
         CreateEnemies();
@@ -24,8 +28,14 @@ public class GameSceneManager : MonoBehaviour {
 		
 	}
 
+    public void CallPause () {
+        if (pause != null)
+            pause();
+    }
+
     void ToChoose () {
         state = Random.Range(0, tiposVirus.Length);
+        PlayerPrefs.SetInt("shape", state);
     }
 
     void CreatePlayer () {
