@@ -19,8 +19,8 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4009030480306300}
-  - component: {fileID: 114085369358568660}
   - component: {fileID: 54374870333560442}
+  - component: {fileID: 114085369358568660}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -69,3 +69,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   angularSpeed: 100
+  MATs:
+  - {fileID: 2100000, guid: 1665460a4f7fe034dbaf384b126ccfc6, type: 2}
+  - {fileID: 2100000, guid: e32cdef52a22f0d46b661c472ed8780f, type: 2}
+  - {fileID: 2100000, guid: cc6a51403d8e90c4da66cb24b2aacf55, type: 2}
+  - {fileID: 2100000, guid: 56c4ea36b15178d498a3512f3248fd87, type: 2}

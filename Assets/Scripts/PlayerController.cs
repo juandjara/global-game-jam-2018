@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
@@ -8,9 +6,12 @@ public class PlayerController : MonoBehaviour {
     public float angularSpeed = 100;
 
     Transform myTrans;
+
+    public Material[] MATs;
     // Use this for initialization
     void Start () {
         myTrans = this.transform;
+        ChangeMAT();
     }
 
     // Update is called once per frame
@@ -28,7 +29,22 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    /*enum class EVirusStatus{
+    void OnCollisionEnter (Collision col) {
+        if (col.gameObject.layer == 8) {
+            Dead();
+        }
+    }
 
-    }*/
+    private void Dead () {
+        // TODO GameOver scene
+    }
+
+    void ChangeMAT () {
+        int m = Random.Range(0, MATs.Length);
+
+        Renderer[] matr = GetComponentsInChildren<Renderer>();
+        foreach (var item in matr) {
+            item.material = MATs[m];
+        }
+    }
 }

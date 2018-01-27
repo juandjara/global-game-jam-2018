@@ -9,7 +9,6 @@ public class SceneManager : MonoBehaviour {
     public GameObject[] tiposVirus;
 
     int state;
-    public int enemies;
 
 	// Use this for initialization
 	void Start () {
@@ -25,7 +24,7 @@ public class SceneManager : MonoBehaviour {
 	}
 
     void ToChoose () {
-        state = Random.Range(0, enemies);
+        state = Random.Range(0, tiposVirus.Length);
     }
 
     void CreatePlayer () {
@@ -35,7 +34,7 @@ public class SceneManager : MonoBehaviour {
     }
 
     void CreateEnemies () {
-        for (int i = 0; i < enemies; i++) {
+        for (int i = 0; i < tiposVirus.Length; i++) {
             GameObject e = Instantiate(enemy);
             e.transform.position = NewTargetPosition();
             Instantiate(tiposVirus[EnemyMesh()], e.transform);
@@ -52,7 +51,7 @@ public class SceneManager : MonoBehaviour {
     int EnemyMesh () {
         int i = state;
         while (i == state) {
-            i = Random.Range(0, enemies);
+            i = Random.Range(0, (tiposVirus.Length-1));
         }
         return i;
     }

@@ -8,12 +8,13 @@ public class SampleNavScript : MonoBehaviour {
     public GameObject target;
     GameObject t;
     NavMeshAgent agent;
+    public Material[] MATs;
 
     // Use this for initialization
     void Awake () { CreateTarget(); }
     void Start () {
         agent = GetComponent<NavMeshAgent>();
-        
+        ChangeMAT();
     }
 
     // Update is called once per frame
@@ -23,7 +24,7 @@ public class SampleNavScript : MonoBehaviour {
 
     }
 
-    private void OnCollisionEnter (Collision collision) {
+    void OnCollisionEnter (Collision collision) {
         if (collision.gameObject == t) {
             t.transform.position = NewTargetPosition();
         }
@@ -40,6 +41,15 @@ public class SampleNavScript : MonoBehaviour {
         t = Instantiate(target);
         t.transform.position = NewTargetPosition();
         target = t;
+    }
+
+    void ChangeMAT () {
+        int m = Random.Range(0, MATs.Length);
+
+        Renderer[] matr = GetComponentsInChildren<Renderer>();
+        foreach (var item in matr) {
+            item.material = MATs[m];
+        }
     }
 
 }
