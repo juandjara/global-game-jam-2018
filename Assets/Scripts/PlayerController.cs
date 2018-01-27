@@ -19,7 +19,6 @@ public class PlayerController : MonoBehaviour {
     void Start () {
         myTrans = this.transform;
         ChangeMAT();
-        LoadData();
     }
 
     // Update is called once per frame
@@ -97,10 +96,13 @@ public class PlayerController : MonoBehaviour {
         PlayerPrefs.SetInt("Lista de infectados", infected.Count);
     }
 
-    void LoadData () {
+    public void LoadData () {
         int i = PlayerPrefs.GetInt("Lista de infectados");
         int winPlataform = PlayerPrefs.GetInt("winPlataform");
-        /*.InstantiateInfected(i);*/
         gameScene.InstantiateInfected(i, winPlataform);
+    }
+
+    public void AddInfected (GameObject newInfected) {
+        infected.Add(newInfected);
     }
 }
