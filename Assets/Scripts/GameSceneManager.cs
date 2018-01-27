@@ -59,4 +59,22 @@ public class GameSceneManager : MonoBehaviour {
         }
         return i;
     }
+
+    public void InstantiateInfected(int iInfected, int winPlataform) {
+        if(winPlataform == 1) { iInfected = +1; }
+        ToChoose();
+        CreatePlayer();
+        CreateEnemies();
+
+        for (int i = 0; i < iInfected; i++) {
+            GameObject o = Instantiate(enemy);
+            o.transform.position = NewTargetPosition();
+            Instantiate(tiposVirus[state], o.transform);
+            o.GetComponent<SampleNavScript>().Infect();
+            o.layer = 10;
+        }
+        
+
+
+    }
 }

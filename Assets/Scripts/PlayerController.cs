@@ -9,10 +9,12 @@ public class PlayerController : MonoBehaviour {
 
     Transform myTrans;
 
-
+    bool handleControl = false;
     List<GameObject> infected = new List<GameObject>();
 
     public Material[] MATs;
+
+    public GameSceneManager gameScene;
     // Use this for initialization
     void Start () {
         myTrans = this.transform;
@@ -21,16 +23,18 @@ public class PlayerController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (Input.GetKey(KeyCode.W)) {
-            myTrans.Translate(Vector3.forward * speed * Time.deltaTime);
-        } else if (Input.GetKey(KeyCode.S)) {
-            myTrans.Translate(Vector3.back * speed * Time.deltaTime);
-        }
+        if (!handleControl) {
+            if (Input.GetKey(KeyCode.W)) {
+                myTrans.Translate(Vector3.forward * speed * Time.deltaTime);
+            } else if (Input.GetKey(KeyCode.S)) {
+                myTrans.Translate(Vector3.back * speed * Time.deltaTime);
+            }
 
-        if (Input.GetKey(KeyCode.D)) {
-            myTrans.Rotate(Vector3.up * angularSpeed * Time.deltaTime);
-        } else if (Input.GetKey(KeyCode.A)) {
-            myTrans.Rotate(Vector3.down * angularSpeed * Time.deltaTime);
+            if (Input.GetKey(KeyCode.D)) {
+                myTrans.Rotate(Vector3.up * angularSpeed * Time.deltaTime);
+            } else if (Input.GetKey(KeyCode.A)) {
+                myTrans.Rotate(Vector3.down * angularSpeed * Time.deltaTime);
+            }
         }
     }
 
@@ -39,6 +43,7 @@ public class PlayerController : MonoBehaviour {
             Dead();
         }
         if (col.gameObject.layer == 9) {
+            SaveData();
             infected.Add(col.gameObject);
             col.gameObject.GetComponent<SampleNavScript>().Infect();
 
@@ -46,37 +51,55 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    private void Dead () {
+    void Dead () {
         if (infected.Count == 0) {
             // TODO GameOver scene
+            PlayerPrefs.SetInt("Lista de infectados", 0);
         } else {
             ChangeBode();
         }
     }
 
     void ChangeMAT () {
-        int m = Random.Range(0, MATs.Length);
+        if (MATs[0] != null) {
+            int m = Random.Range(0, MATs.Length);
 
-        Renderer[] matr = GetComponentsInChildren<Renderer>();
-        foreach (var item in matr) {
-            item.material = MATs[m];
+            Renderer[] matr = GetComponentsInChildren<Renderer>();
+            foreach (var item in matr) {
+                item.material = MATs[m];
+            }
         }
     }
 
     void ChangeBode () {
+        handleControl = true;
         GameObject newPlayer = infected[Random.Range(0, infected.Count)];
         Destroy(newPlayer.GetComponent<SampleNavScript>());
+        Destroy(newPlayer.GetComponent<UnityEngine.AI.NavMeshAgent>());
         newPlayer.AddComponent<PlayerController>();
         newPlayer.layer = 0;
         newPlayer.name = "Player(Clone)";
         newPlayer.transform.GetChild(0).GetComponent<Animator>().SetTrigger("alive");
+        Instantiate(transform.GetChild(0).gameObject, newPlayer.transform); // TODO cambiar el orden de los hijos
         infected.Remove(newPlayer);
-        Animator anim = GetComponent<Animator>();
+        Animator anim = transform.GetChild(1).GetComponent<Animator>();
         anim.SetTrigger("dead");
-        Invoke("DeleteThisPlayer", 3.1f);
+        SaveData();
+        Invoke("DeleteThisPlayer", 3);
     }
 
     void DeleteThisPlayer () {
-        Destroy(this);
+        Destroy(this.gameObject);
+    }
+
+    void SaveData () {
+        PlayerPrefs.SetInt("Lista de infectados", infected.Count);
+    }
+
+    void LoadData () {
+        int i = PlayerPrefs.GetInt("Lista de infectados");
+        int winPlataform = PlayerPrefs.GetInt("winPlataform");
+        /*.InstantiateInfected(i);*/
+        gameScene.InstantiateInfected(i, winPlataform);
     }
 }

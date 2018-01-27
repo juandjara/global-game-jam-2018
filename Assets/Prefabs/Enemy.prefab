@@ -71,6 +71,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: e32cdef52a22f0d46b661c472ed8780f, type: 2}
   - {fileID: 2100000, guid: cc6a51403d8e90c4da66cb24b2aacf55, type: 2}
   - {fileID: 2100000, guid: 56c4ea36b15178d498a3512f3248fd87, type: 2}
+  texture: {fileID: 2800000, guid: 18c5d2909f6cdb246b1336e6534ae739, type: 3}
 --- !u!195 &195611088681185496
 NavMeshAgent:
   m_ObjectHideFlags: 1

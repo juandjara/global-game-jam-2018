@@ -11,6 +11,7 @@ public class SampleNavScript : MonoBehaviour {
     public Material[] MATs;
     Animator anim;
 
+    public Texture texture;
     bool infectedStatus = false;
 
     // Use this for initialization
@@ -23,9 +24,11 @@ public class SampleNavScript : MonoBehaviour {
     
     // Update is called once per frame
     void Update () {
+        
         if (!infectedStatus) {
             agent.SetDestination(t.transform.position);
         }
+        
 
     }
 
@@ -58,9 +61,18 @@ public class SampleNavScript : MonoBehaviour {
     }
 
     public void Infect () {
+        agent.isStopped = true;
         infectedStatus = true;
+
+        
+        Renderer[] matr = GetComponentsInChildren<Renderer>();
+        foreach (var item in matr) {
+            item.material.mainTexture = texture;
+        }
+
         anim.SetTrigger("dead");
         gameObject.layer = 10;
+
     }
 
 
