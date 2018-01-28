@@ -11,6 +11,9 @@ public class PlatformerController : MonoBehaviour {
 	public float moveSpeed = 10;
 	public float raycastMargin = 0.1f;
 	public float dieLine = -2;
+	public GameObject[] shapes;
+	public Material playerMaterial;
+
 	private float distToGround;
 	private float radius;
 	Rigidbody body;
@@ -22,6 +25,24 @@ public class PlatformerController : MonoBehaviour {
 		capsule = GetComponent<CapsuleCollider>();
 		distToGround = capsule.bounds.extents.y;
 		radius = capsule.bounds.extents.x;
+		loadShape();
+		loadMaterial();
+	}
+
+	void loadShape() {
+		int shapeIndex = PlayerPrefs.GetInt("shape");
+		GameObject shapePrefab = shapes[shapeIndex];
+		Vector3 position = new Vector3(transform.position.x, transform.position.y, transform.position.z);
+		GameObject shape = Instantiate(shapePrefab, position, Quaternion.identity);
+		shape.SetActive(false);
+		shape.transform.parent = gameObject.transform;
+		shape.SetActive(true);
+	}
+	void loadMaterial() {
+		Renderer[] childRenderers = transform.GetComponentsInChildren<Renderer>();
+		foreach(Renderer r in childRenderers) {
+			r.material = playerMaterial;
+		}
 	}
 
 	bool isGrounded() {
@@ -35,7 +56,7 @@ public class PlatformerController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
 		bool _isGrounded = isGrounded();
 		bool _wallAtLeft = wallAtLeft();
 		bool _wallAtRight = wallAtRight();
@@ -44,10 +65,10 @@ public class PlatformerController : MonoBehaviour {
 				body.velocity = Vector3.up * jumpSpeed;
 			}
 			if(_wallAtRight) {
-				body.velocity += Vector3.left * moveSpeed * 0.5f;
+				body.velocity += Vector3.left * moveSpeed / 2;
 			}
 			if(_wallAtLeft) {
-				body.velocity += Vector3.right * moveSpeed * 0.5f;
+				body.velocity += Vector3.right * moveSpeed / 2;
 			}
 		}
 		float axis = Input.GetAxis("Horizontal");
@@ -66,9 +87,19 @@ public class PlatformerController : MonoBehaviour {
 		if(other.gameObject.tag == "Respawn") {
 			Die();
 		}
+		if(other.gameObject.tag == "Finish") {
+			Win();
+		}
+	}
+
+	public void Win() {
+		PlayerPrefs.SetInt("winPlatform", 1);
+        //PlayerPrefs.SetInt("Lista de infectados", 1);
+        SceneManager.LoadScene("1");	
 	}
 
 	public void Die() {
-		SceneManager.LoadScene("platform");
+		PlayerPrefs.SetInt("winPlatform", 0);
+		SceneManager.LoadScene("1");
 	}
 }

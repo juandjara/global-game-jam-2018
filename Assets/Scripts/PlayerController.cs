@@ -17,12 +17,28 @@ public class PlayerController : MonoBehaviour {
     public Material[] MATs;
 
     GameSceneManager gameScene;
+    
+
+    public Texture texture;
+
+
     // Use this for initialization
-    void Start () {
+    void Awake () {
         gameScene = FindObjectOfType<GameSceneManager>();
+    }
+
+    void Start () {
+
         myTrans = this.transform;
         gameScene.pause += PauseControl;
-        ChangeMAT();
+
+        
+
+        Renderer[] matr = GetComponentsInChildren<Renderer>();
+        foreach (var item in matr) {
+            item.material.mainTexture = texture;
+        }
+       
     }
     void PauseControl () {
         handleControl = true;
@@ -47,6 +63,7 @@ public class PlayerController : MonoBehaviour {
 
     void OnCollisionEnter (Collision col) {
         if (col.gameObject.layer == 8) {
+            Debug.Log("colision");
             Dead();
         }
         if (col.gameObject.layer == 9) {
@@ -55,6 +72,18 @@ public class PlayerController : MonoBehaviour {
 
             //
             // centrar camara
+            string nombreColor = col.gameObject.GetComponentInChildren<Renderer>().material.name;
+
+            if(nombreColor == "Blue") {
+                PlayerPrefs.SetInt("enemyColor", 1);
+            }else if(nombreColor == "Green") {
+                PlayerPrefs.SetInt("enemyColor", 2);
+            } else if (nombreColor == "Orange") {
+                PlayerPrefs.SetInt("enemyColor", 3);
+            } else if (nombreColor == "Red") {
+                PlayerPrefs.SetInt("enemyColor", 4);
+            }
+
             FindObjectOfType<CameraController>().target = col.transform;
             Invoke("ChangeScene", 0.3f);
             /// Cambiar de lugar
@@ -67,7 +96,7 @@ public class PlayerController : MonoBehaviour {
     void ChangeScene () {
         
         
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene(Random.Range(2,4));
         //col.gameObject.GetComponent<SampleNavScript>().Infect();
     }
 
@@ -80,18 +109,10 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    void ChangeMAT () {
-        if (MATs[0] != null) {
-            int m = Random.Range(0, MATs.Length);
-            PlayerPrefs.SetInt("color", m);
-            Renderer[] matr = GetComponentsInChildren<Renderer>();
-            foreach (var item in matr) {
-                item.material = MATs[m];
-            }
-        }
-    }
+    
 
     void ChangeBode () {
+        GetComponent<Collider>().enabled = false;
         handleControl = true;
         GameObject newPlayer = infected[Random.Range(0, infected.Count)];
         Destroy(newPlayer.GetComponent<SampleNavScript>());
@@ -100,6 +121,8 @@ public class PlayerController : MonoBehaviour {
         newPlayer.layer = 0;
         newPlayer.name = "Player(Clone)";
         newPlayer.transform.GetChild(0).GetComponent<Animator>().SetTrigger("alive");
+        newPlayer.AddComponent<Rigidbody>();
+        newPlayer.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionZ;
         Instantiate(transform.GetChild(0).gameObject, newPlayer.transform); // TODO cambiar el orden de los hijos
         infected.Remove(newPlayer);
         Animator anim = transform.GetChild(1).GetComponent<Animator>();
@@ -116,11 +139,7 @@ public class PlayerController : MonoBehaviour {
         PlayerPrefs.SetInt("Lista de infectados", infected.Count);
     }
 
-    public void LoadData () {
-        int i = PlayerPrefs.GetInt("Lista de infectados");
-        int winPlataform = PlayerPrefs.GetInt("winPlataform");
-       // gameScene.InstantiateInfected(i, winPlataform);
-    }
+    
 
     public void AddInfected (GameObject newInfected) {
         infected.Add(newInfected);
@@ -128,7 +147,11 @@ public class PlayerController : MonoBehaviour {
 
     void GameOver () {
         gameScene.CallPause();
+        gameScene.UI.SetActive(true);
 
-
+        PlayerPrefs.SetInt("Lista de infectados", 0);
+        PlayerPrefs.SetInt("winPlatform", 0);
     }
+
+
 }

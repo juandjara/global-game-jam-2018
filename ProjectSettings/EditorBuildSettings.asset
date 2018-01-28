@@ -12,6 +12,12 @@ EditorBuildSettings:
     path: Assets/Scenes/1.unity
     guid: 539c7365bba4d584d909f1da8c111d8e
   - enabled: 1
-    path: Assets/Scenes/platform.unity
-    guid: 2f8d07fca37be436d8fe0e0333da0005
+    path: Assets/nuevonivel_01.unity
+    guid: 9c06b9db3732478408d51101a5b68695
+  - enabled: 1
+    path: Assets/nuevonivel_02.unity
+    guid: 726a1cedc0b3f034094d24395b711d25
+  - enabled: 1
+    path: Assets/nuevonivel_03.unity
+    guid: 3f6a6ffd8ee545749aa8d33c93f7bb3e
   m_configObjects: {}

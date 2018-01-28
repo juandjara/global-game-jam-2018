@@ -8,40 +8,61 @@ public class GameSceneManager : MonoBehaviour {
     public GameObject enemy;
     public GameObject[] tiposVirus;
 
-    int state;
+    int currentPlayerShapeIndex;
 
 
     //public delegate void Pause ();
     public System.Action pause;
+    public GameObject UI;
+
+    public Material playerMaterial;
 
     // Use this for initialization
     void Start () {
+        UI = GameObject.Find("Canvas");
+        UI.SetActive(false);
+
         ToChoose();
         CreatePlayer();
-        CreateEnemies();
-        FindObjectOfType<PlayerController>().LoadData();
-
+        LoadData();
     }
 	
 	// Update is called once per frame
 	void Update () {
 		
 	}
+    public void LoadData () {
+        InstantiateInfected(ListaInfectados(), winPlataform());
+    }
+    int winPlataform () {
+        int i = PlayerPrefs.GetInt("winPlatform");
+        return i;
+    }
 
+    int ListaInfectados () {
+        int i = PlayerPrefs.GetInt("Lista de infectados");
+        //if(PlayerPrefs.GetInt("Lista de infectados") == null) { return 0; }
+        return i;
+    }
     public void CallPause () {
         if (pause != null)
             pause();
     }
 
     void ToChoose () {
-        state = Random.Range(0, tiposVirus.Length);
-        PlayerPrefs.SetInt("shape", state);
+        currentPlayerShapeIndex = Random.Range(0, tiposVirus.Length);
+        PlayerPrefs.SetInt("shape", currentPlayerShapeIndex);
     }
 
     void CreatePlayer () {
         GameObject p = Instantiate(player);
         p.transform.position = new Vector3(-7.11f, 0.5f, 2.13f);
-        Instantiate(tiposVirus[state], p.transform);
+        Instantiate(tiposVirus[currentPlayerShapeIndex], p.transform);
+
+        Renderer[] matr = GetComponentsInChildren<Renderer>();
+        foreach (var item in matr) {
+            item.material = playerMaterial;
+        }
     }
 
     void CreateEnemies () {
@@ -50,9 +71,14 @@ public class GameSceneManager : MonoBehaviour {
             e.transform.position = NewTargetPosition();
             Instantiate(tiposVirus[EnemyMesh()], e.transform);
         }
+        
+    }
+
+    void CreateTargetEnemy () {
         GameObject o = Instantiate(enemy);
+        o.name = "Target";
         o.transform.position = NewTargetPosition();
-        Instantiate(tiposVirus[state], o.transform);
+        Instantiate(tiposVirus[currentPlayerShapeIndex], o.transform);
         o.layer = 9;
     }
 
@@ -64,29 +90,32 @@ public class GameSceneManager : MonoBehaviour {
     }
 
     int EnemyMesh () {
-        int i = state;
-        while (i == state) {
+        int i = currentPlayerShapeIndex;
+        while (i == currentPlayerShapeIndex) {
             i = Random.Range(0, (tiposVirus.Length));
         }
         return i;
     }
 
-    public void InstantiateInfected(int iInfected, int winPlataform) {
-        if (iInfected != 0) {
-            if (winPlataform == 1) { iInfected = +1; }
-            ToChoose();
-            CreatePlayer();
-            CreateEnemies();
+    public void InstantiateInfected (int iInfected, int winPlataform) {
+        Debug.Log(iInfected + "" + winPlataform);
+        
+        if (winPlataform == 1) { iInfected += 1;}
+        
 
-            for (int i = 0; i < iInfected; i++) {
-                GameObject o = Instantiate(enemy);
-                o.transform.position = NewTargetPosition();
-                Instantiate(tiposVirus[state], o.transform);
-                o.GetComponent<SampleNavScript>().Infect();
-                o.layer = 10;
-                FindObjectOfType<PlayerController>().AddInfected(o);
-            }
+        CreateEnemies();
+        CreateTargetEnemy();
+
+        Debug.Log(iInfected + "fdsaf" + winPlataform);
+        for (int i = 0; i < iInfected; i++) {
+            GameObject o = Instantiate(enemy);
+            o.name = "Infected";
+            Instantiate(tiposVirus[currentPlayerShapeIndex], o.transform);
+            o.transform.position = NewTargetPosition();
+            o.GetComponent<SampleNavScript>().Infect();
+            FindObjectOfType<PlayerController>().AddInfected(o);
         }
+        
 
 
     }

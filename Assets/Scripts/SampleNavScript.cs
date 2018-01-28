@@ -12,22 +12,30 @@ public class SampleNavScript : MonoBehaviour {
     Animator anim;
     
 
-    public Texture texture;
+    public Material infectedMAT;
     bool infectedStatus = false;
 
     GameSceneManager gameScene;
     // Use this for initialization
-    void Awake () { CreateTarget(); }
+    void Awake () {
+        
+    }
     void Start () {
-        gameScene = FindObjectOfType<GameSceneManager>();
+        CreateTarget();
         agent = GetComponent<NavMeshAgent>();
-        gameScene.pause += PauseControl;
-        ChangeMAT();
         SetAnim();
+        gameScene = FindObjectOfType<GameSceneManager>();
+        gameScene.pause += PauseControl;
+        if(infectedStatus == false) {
+            ChangeMAT();
+        }
+        
     }
     void PauseControl () {
         Debug.Log("pausecall");
-        agent.isStopped = true;
+        if (agent != null) {
+            agent.isStopped = true;
+        }
         infectedStatus = true;
     }
 
@@ -70,17 +78,22 @@ public class SampleNavScript : MonoBehaviour {
     }
 
     public void Infect () {
+        agent = GetComponent<NavMeshAgent>();
         agent.isStopped = true;
         infectedStatus = true;
+        Debug.Log("infectando...");
 
         
         Renderer[] matr = GetComponentsInChildren<Renderer>();
-        foreach (var item in matr) {
-            item.material.mainTexture = texture;
+        foreach (Renderer item in matr) {
+            item.material = infectedMAT;
         }
 
+        SetAnim();
         anim.SetTrigger("dead");
         gameObject.layer = 10;
+
+        Debug.Log("infectado!");
 
     }
 
