@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(CapsuleCollider))]
 public class PlatformerController : MonoBehaviour {
 
+    private bool handleControl = false;
 	public float jumpSpeed = 10;
 	public float moveSpeed = 10;
 	public float raycastMargin = 0.1f;
@@ -18,8 +19,7 @@ public class PlatformerController : MonoBehaviour {
 	private float radius;
 	Rigidbody body;
 	CapsuleCollider capsule;
-
-	// Use this for initialization
+    
 	void Start () {
 		body = GetComponent<Rigidbody>();
 		capsule = GetComponent<CapsuleCollider>();
@@ -45,33 +45,57 @@ public class PlatformerController : MonoBehaviour {
 		}
 	}
 
-	bool isGrounded() {
-		return Physics.Raycast(transform.position, -Vector3.up, distToGround + raycastMargin);
-	}
+    bool isGrounded () {
+
+        // Aquí he añadido unos raycast extra para poder saltar desde el borde de un bloque
+        if (Physics.Raycast(new Vector3(transform.position.x + 1, transform.position.y, transform.position.z), -Vector3.up, distToGround + raycastMargin) || 
+            Physics.Raycast(new Vector3(transform.position.x + -1, transform.position.y, transform.position.z), -Vector3.up, distToGround + raycastMargin) ||
+            Physics.Raycast(new Vector3(transform.position.x, transform.position.y, transform.position.z), -Vector3.up, distToGround + raycastMargin)) {
+            
+            return true;
+        }
+        return false;
+
+        //return Physics.Raycast(transform.position, -Vector3.up, distToGround + raycastMargin);
+    }
 	bool wallAtRight() {
-		return Physics.Raycast(transform.position, Vector3.right, radius + raycastMargin);
+        if (Physics.Raycast(transform.position, Vector3.right, radius + raycastMargin)) {
+            handleControl = true;
+            return true;
+        }
+		return false;
 	}
 	bool wallAtLeft() {
-		return Physics.Raycast(transform.position, Vector3.left, radius + raycastMargin);		
+        if (Physics.Raycast(transform.position, Vector3.left, radius + raycastMargin)) {
+            handleControl = true;
+            return true;
+        }
+        return false;	
 	}
 	
-	// Update is called once per frame
 	void FixedUpdate () {
-		bool _isGrounded = isGrounded();
+        handleControl = false;
+        bool _isGrounded = isGrounded();
 		bool _wallAtLeft = wallAtLeft();
 		bool _wallAtRight = wallAtRight();
-		if(Input.GetKeyDown("space")) {
+        float axis = 0;
+        
+
+        if (Input.GetKeyDown("space") || Input.GetKeyDown(KeyCode.W)) {
 			if(_isGrounded || _wallAtLeft || _wallAtRight) {
 				body.velocity = Vector3.up * jumpSpeed;
 			}
-			if(_wallAtRight) {
-				body.velocity += Vector3.left * moveSpeed / 2;
+			if(_wallAtRight && !_isGrounded) { // He añadido la condición de que no esté en el suelo para salvar un error
+				body.velocity += Vector3.left * moveSpeed *0.5f;
 			}
-			if(_wallAtLeft) {
-				body.velocity += Vector3.right * moveSpeed / 2;
+			if(_wallAtLeft && !_isGrounded) {
+				body.velocity += Vector3.right * moveSpeed *0.5f;
 			}
 		}
-		float axis = Input.GetAxis("Horizontal");
+        if (!handleControl) { // Esta condición es para bloquear el control del personaje cuando salta contra un bloque, 
+                              // porque como hemos visto, la gente no se entera de que no hay que usar el control del personaje contra los bloques
+            axis = Input.GetAxis("Horizontal");
+        }
 		float move = axis * moveSpeed * Time.deltaTime;
 		if(Mathf.Abs(axis) > 0.05 && Mathf.Abs(body.velocity.x) > 0) {
 			body.velocity.Set(0, body.velocity.y, 0);
